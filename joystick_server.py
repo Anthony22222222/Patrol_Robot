@@ -6,13 +6,11 @@ from time import monotonic, sleep
 from statistics import mean
 import subprocess
 
-# ================================================================
 # MPU6050 GYROSCOPE CONFIGURATION
 # Current mounting orientation:
-#   Y axis -> Vehicle front
-#   X axis -> Vehicle right side
-#   Z axis -> Vehicle up
-# ================================================================
+#   Y axis = Vehicle front
+#   X axis = Vehicle right side
+#   Z axis = Vehicle up
 
 
 class MPU6050:
@@ -28,7 +26,7 @@ class MPU6050:
             self.bus.write_byte_data(self.address, 0x6B, 0)
             print("✓ MPU6050 powered on")
             
-            # Configure gyro for ±250 degrees/second
+            # Configure gyro for +/- 250 degrees/second
             self.bus.write_byte_data(self.address, 0x1B, 0)
             print("✓ Gyro range set to ±250 deg/s")
             
@@ -135,10 +133,7 @@ MOVE_TIME = 2.0
 BRAKE_POWER = 50
 BRAKE_TIME = 0.4
 
-
-# ================================================================
 # TURNING PARAMETERS (ADJUST THESE)
-# ================================================================
 
 # Phase 1: Power Burst Parameters
 BURST_POWER = 100      # Initial high power for strong start (0-100)
@@ -453,7 +448,7 @@ GPIO.setwarnings(False)  # Disable warnings
 BUZZER_PIN = 21  # GPIO pin for buzzer
 GPIO.setup(BUZZER_PIN, GPIO.OUT)
 
-# Helper Functions
+# Functions
 def stop_motors():
     ENA.value = ENB.value = 0
     IN1.off(); IN2.off(); IN3.off(); IN4.off()
@@ -470,7 +465,7 @@ def beep_mode_change():
 def play_connected_sound():
     """Play 'connected' sound when controller connects"""
     try:
-        # Non-blocking sound playback
+        # Non_blocking sound playback
         sound_file = "connected.wav"
         subprocess.Popen(['aplay', sound_file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception as e:
@@ -522,10 +517,6 @@ def drive(L, R):
         IN3.off(); IN4.off()
         ENB.value = 0
 
-# ================================================================
-
-
-
 # Server Implementation
 PORT = 5000
 
@@ -567,7 +558,7 @@ def start_server():
                         is_recording = False
                         print(f"\n=== Recording Complete: {len(recorded_path)} movements ===")
                         
-                        # Merge consecutive movements and prepare patrol paths
+                        # Merge consecutive movements and prepare patrol paths (does not work perfectly)
                         recorded_path = merge_path(recorded_path)
                         print(f"=== Path merged to {len(recorded_path)} movements ===")
                         
@@ -660,7 +651,7 @@ if __name__ == "__main__":
         print("\nWARNING: Continuing without gyroscope")
         time.sleep(2)  # Give user time to read error
     
-    # Set volume to maximum
+    # Set volume to maximum (Not used in current setup, was to test potential passive buzzer)
     subprocess.call(['amixer', 'sset', 'Master', '100%'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     
     # Start robot server
